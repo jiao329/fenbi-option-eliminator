@@ -1,0 +1,54 @@
+/* 粉笔刷题 · 长按排除选项 —— 样式
+ * 注意：粉笔使用 Angular 视图封装（[_ngcontent-xxx] 属性选择器），
+ * 其选择器优先级较高，因此这里统一使用 !important 覆盖。
+ */
+
+html {
+  --fb-opt-opacity: 0.3;
+}
+
+/* 被排除的选项：整行变淡 + 去色 */
+.fb-opt-excluded {
+  opacity: var(--fb-opt-opacity, 0.3) !important;
+  filter: grayscale(1) !important;
+  transition: opacity 0.15s ease, filter 0.15s ease !important;
+}
+
+/* 可选：同时加删除线 */
+html.fb-opt-strike-on .fb-opt-excluded,
+html.fb-opt-strike-on .fb-opt-excluded .options-material,
+html.fb-opt-strike-on .fb-opt-excluded .fb-radioInput {
+  text-decoration: line-through !important;
+}
+
+/* 长按过程中禁止选中文字 / 拖拽 / 长按系统菜单 */
+.fb-opt-pressing,
+.fb-opt-pressing * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* 首次使用提示 */
+#fb-opt-toast {
+  position: fixed !important;
+  right: 20px !important;
+  bottom: 24px !important;
+  z-index: 2147483647 !important;
+  max-width: 320px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(23, 33, 54, 0.92);
+  color: #ffffff;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Microsoft YaHei", "PingFang SC", sans-serif;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.24);
+  pointer-events: none !important;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#fb-opt-toast.fb-opt-toast-out {
+  opacity: 0;
+  transform: translateY(8px);
+}

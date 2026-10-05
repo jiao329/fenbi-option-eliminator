@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>粉笔长按排除选项</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="hd">
+    <div class="hd-title">
+      <span class="logo"></span>
+      <span>长按排除选项</span>
+    </div>
+    <label class="switch" title="总开关">
+      <input type="checkbox" id="enabled" />
+      <span class="slider"></span>
+    </label>
+  </header>
+
+  <p class="tip" id="tip">在粉笔网页版刷题时，<b>长按选项</b>即可变淡排除，再次长按恢复。</p>
+
+  <section class="status" id="status">检测中…</section>
+
+  <section class="card">
+    <div class="row">
+      <label for="holdMs">长按判定时长</label>
+      <span class="val" id="holdMsVal">400 ms</span>
+    </div>
+    <input type="range" id="holdMs" min="150" max="900" step="50" />
+    <p class="hint">按住超过该时长即触发排除（App 端约为 400ms）。</p>
+
+    <div class="row">
+      <label for="opacity">排除后透明度</label>
+      <span class="val" id="opacityVal">30%</span>
+    </div>
+    <input type="range" id="opacity" min="10" max="70" step="5" />
+  </section>
+
+  <section class="card">
+    <label class="check"><input type="checkbox" id="strike" /><span>排除后同时加删除线</span></label>
+    <label class="check"><input type="checkbox" id="rightClick" /><span>右键单击也可排除 / 恢复</span></label>
+    <label class="check"><input type="checkbox" id="touch" /><span>触屏长按（并屏蔽长按系统菜单）</span></label>
+    <label class="check"><input type="checkbox" id="showHint" /><span>首次使用时显示提示</span></label>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <label for="customSelector">自定义选项选择器（高级）</label>
+    </div>
+    <input type="text" id="customSelector" placeholder="留空即使用内置选择器，多个用英文逗号分隔" />
+    <p class="hint">若粉笔改版导致识别失效，可在此填写选项行的 CSS 选择器，例如 <code>li.theme-ques-option</code>。</p>
+  </section>
+
+  <section class="actions">
+    <button id="clear" class="btn">清除本页排除</button>
+    <button id="reset" class="btn ghost">恢复默认</button>
+  </section>
+
+  <section class="actions">
+    <button id="diag" class="btn ghost">复制诊断报告（长按没反应时用）</button>
+  </section>
+
+  <footer class="ft">
+    <a href="https://www.fenbi.com/spa/tiku" target="_blank" rel="noreferrer">打开粉笔题库</a>
+    <span>v1.1.0</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

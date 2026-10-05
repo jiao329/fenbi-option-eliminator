@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "粉笔刷题 · 长按排除选项",
+  "version": "1.1.0",
+  "description": "在粉笔网页版刷题时长按选项即可变淡排除（再次长按恢复）。已适配新版 spa.fenbi.com/ti 与老版 www.fenbi.com/spa/tiku。",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://*.fenbi.com/*", "https://fenbi.com/*"],
+  "action": {
+    "default_title": "粉笔长按排除选项",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.fenbi.com/*", "https://fenbi.com/*"],
+      "js": ["src/content.js"],
+      "css": ["src/content.css"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>fenbi fixture v2 (spa.fenbi.com/ti)</title>
+</head>
+<body>
+  <!--
+    新版粉笔结构，取自线上 bundle 中的 app-question-choice / app-choice-radio /
+    app-choice-checkbox 组件，以及用户实测页面里的真实 HTML。
+  -->
+  <div class="question-choice-container">
+    <app-format-html><div class="content">下列说法正确的是？</div></app-format-html>
+
+    <!-- 单选题：app-choice-radio -->
+    <app-choice-radio>
+      <ul class="choice-radios allow">
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-0">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-0" />
+            <div class="input-radio"> A </div>
+            <p class="input-text ng-star-inserted">财政部决定2019年适度降低地方政府专项债券规模</p>
+          </label>
+        </li>
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-1">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-1" />
+            <div class="input-radio"> B </div>
+            <p class="input-text ng-star-inserted">选项二的内容</p>
+          </label>
+        </li>
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-2">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-2" />
+            <div class="input-radio"> C </div>
+            <p class="input-text ng-star-inserted">选项三的内容</p>
+          </label>
+        </li>
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-3">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-3" />
+            <div class="input-radio"> D </div>
+            <p class="input-text ng-star-inserted">选项四的内容</p>
+          </label>
+        </li>
+      </ul>
+    </app-choice-radio>
+
+    <!-- 多选题：app-choice-checkbox -->
+    <app-choice-checkbox>
+      <ul class="choice-checkboxs allow">
+        <li class="choice-checkbox">
+          <label class="choice-checkbox-label" for="9-0">
+            <input type="checkbox" class="option-checkbox" id="9-0" />
+            <div class="input-checkbox"> A </div>
+            <p class="input-text">多选选项一</p>
+          </label>
+        </li>
+        <li class="choice-checkbox">
+          <label class="choice-checkbox-label" for="9-1">
+            <input type="checkbox" class="option-checkbox" id="9-1" />
+            <div class="input-checkbox"> B </div>
+            <p class="input-text">多选选项二</p>
+          </label>
+        </li>
+        <li class="choice-checkbox">
+          <label class="choice-checkbox-label" for="9-2">
+            <input type="checkbox" class="option-checkbox" id="9-2" />
+            <div class="input-checkbox"> C </div>
+            <p class="input-text">多选选项三</p>
+          </label>
+        </li>
+      </ul>
+    </app-choice-checkbox>
+  </div>
+
+  <script>
+    // 模拟 Angular 在选项上的原生行为：点击 label -> 勾选 input（用于验证长按不误选）
+    document.addEventListener('click', function (e) {
+      var label = e.target.closest && e.target.closest('label.choice-radio-label, label.choice-checkbox-label');
+      if (!label) return;
+      var input = document.getElementById(label.getAttribute('for'));
+      if (input) window.__checkedIds = (window.__checkedIds || []).concat(input.id);
+    });
+  </script>
+</body>
+</html>

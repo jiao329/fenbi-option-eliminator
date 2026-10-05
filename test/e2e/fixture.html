@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="theme-normal">
+<head>
+  <meta charset="utf-8" />
+  <title>fenbi e2e fixture</title>
+  <!-- 关闭过渡动画，便于在虚拟时间下读取最终计算样式（仅测试用） -->
+  <style>li.fb-opt-excluded { transition: none !important; }</style>
+</head>
+<body>
+  <!-- 结构与粉笔线上 fb-ng-choice-option 组件一致 -->
+  <div class="fb-question-options fenbi-ng-utils">
+    <div class="ques-options-dry">
+      <div class="options-title font-color-gray-mid">1.</div>
+      <div class="content font-color-gray-mid"><p class="ques-type"><span>单选题</span></p></div>
+    </div>
+    <article class="question-content font-color-gray-mid bg-color-gray-bold theme-options-content">下列说法正确的是？</article>
+    <ul class="options font-color-gray-mid">
+      <li class="theme-ques-option"><label class="fb-label"><input class="fb-radio" type="radio" /><span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">A</span></label><div class="options-material theme-options-content font-color-gray-mid">选项一</div></li>
+      <li class="theme-ques-option"><label class="fb-label"><input class="fb-radio" type="radio" /><span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">B</span></label><div class="options-material theme-options-content font-color-gray-mid">选项二</div></li>
+      <li class="theme-ques-option"><label class="fb-label"><input class="fb-radio" type="radio" /><span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">C</span></label><div class="options-material theme-options-content font-color-gray-mid">选项三</div></li>
+      <li class="theme-ques-option"><label class="fb-label"><input class="fb-radio" type="radio" /><span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">D</span></label><div class="options-material theme-options-content font-color-gray-mid">选项四</div></li>
+    </ul>
+  </div>
+
+  <script>
+    (function () {
+      var clicks = [];
+      var options = document.querySelectorAll('li.theme-ques-option');
+      var first = options[0];
+      var second = options[1];
+      var spanOfFirst = first.querySelector('.fb-radioInput');
+
+      // 模拟 Angular 在 li 上注册的 (click) 处理器
+      Array.prototype.forEach.call(options, function (li) {
+        li.addEventListener('click', function () { clicks.push(li); });
+      });
+
+      function ptr(type, el) {
+        var e = new PointerEvent(type, {
+          bubbles: true, cancelable: true, composed: true,
+          button: 0, buttons: 1, clientX: 60, clientY: 60, pointerId: 1, pointerType: 'mouse'
+        });
+        el.dispatchEvent(e);
+        return e;
+      }
+
+      function click(el) {
+        var e = new MouseEvent('click', { bubbles: true, cancelable: true, composed: true });
+        el.dispatchEvent(e);
+        return e;
+      }
+
+      function report(payload) {
+        var pre = document.createElement('pre');
+        pre.id = 'e2e-result';
+        pre.textContent = 'E2E-RESULT:' + JSON.stringify(payload);
+        document.body.appendChild(pre);
+      }
+
+      setTimeout(function () {
+        // 1) 长按第一个选项
+        ptr('pointerdown', spanOfFirst);
+        setTimeout(function () {
+          ptr('pointerup', spanOfFirst);
+          var longPressClicks = clicks.length;
+          var evAfterLongPress = click(spanOfFirst);   // 浏览器补发的 click，应被吞掉
+
+          var afterLongPress = {
+            cssInjected: Array.prototype.some.call(
+              document.querySelectorAll('style'),
+              function (s) { return (s.textContent || '').indexOf('fb-opt-excluded') !== -1; }
+            ),
+            excludedClass: first.classList.contains('fb-opt-excluded'),
+            excludedCount: document.querySelectorAll('.fb-opt-excluded').length,
+            optionClicksAfterLongPress: longPressClicks,
+            clickDefaultPrevented: evAfterLongPress.defaultPrevented
+          };
+
+          // 2) 等过渡动画结束（CSS transition .15s）后再读取透明度
+          setTimeout(function () {
+            afterLongPress.computedOpacity = getComputedStyle(first).opacity;
+
+            // 3) 短按第二个选项，应正常选中（click 放行）
+            ptr('pointerdown', second);
+            setTimeout(function () {
+              ptr('pointerup', second);
+              click(second.querySelector('.options-material'));
+
+              // 4) 再次长按第一个选项 -> 恢复
+              setTimeout(function () {
+                ptr('pointerdown', first);
+                setTimeout(function () {
+                  ptr('pointerup', first);
+
+                  report(Object.assign(afterLongPress, {
+                    shortPressClicks: clicks.length,
+                    shortPressExcluded: second.classList.contains('fb-opt-excluded'),
+                    restoredAfterSecondLongPress: !first.classList.contains('fb-opt-excluded'),
+                    finalExcludedCount: document.querySelectorAll('.fb-opt-excluded').length
+                  }));
+                }, 800);
+              }, 60);
+            }, 120);
+          }, 400);
+        }, 700);
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>

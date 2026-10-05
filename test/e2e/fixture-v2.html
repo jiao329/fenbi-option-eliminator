@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>fenbi e2e fixture v2 (spa.fenbi.com/ti)</title>
+  <!-- 关闭过渡动画，便于在虚拟时间下读取最终计算样式（仅测试用） -->
+  <style>li.fb-opt-excluded { transition: none !important; }</style>
+</head>
+<body>
+  <!-- 新版粉笔真实结构（app-question-choice / app-choice-radio / app-choice-checkbox） -->
+  <div class="question-choice-container">
+    <app-format-html><div class="content">下列说法正确的是？</div></app-format-html>
+
+    <app-choice-radio>
+      <ul class="choice-radios allow">
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-0">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-0" />
+            <div class="input-radio"> A </div>
+            <p class="input-text ng-star-inserted">财政部决定2019年适度降低地方政府专项债券规模</p>
+          </label>
+        </li>
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-1">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-1" />
+            <div class="input-radio"> B </div>
+            <p class="input-text ng-star-inserted">选项二的内容</p>
+          </label>
+        </li>
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-2">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-2" />
+            <div class="input-radio"> C </div>
+            <p class="input-text ng-star-inserted">选项三的内容</p>
+          </label>
+        </li>
+        <li class="choice-radio">
+          <label class="choice-radio-label" for="8-3">
+            <input type="radio" class="option-radio ng-untouched ng-pristine ng-valid" id="8-3" />
+            <div class="input-radio"> D </div>
+            <p class="input-text ng-star-inserted">选项四的内容</p>
+          </label>
+        </li>
+      </ul>
+    </app-choice-radio>
+  </div>
+
+  <script>
+    (function () {
+      var clicks = [];
+      var options = document.querySelectorAll('li.choice-radio');
+      var first = options[0];
+      var second = options[1];
+      var spanOfFirst = first.querySelector('.input-radio');
+
+      Array.prototype.forEach.call(options, function (li) {
+        li.addEventListener('click', function (e) {
+          // label 的默认行为会向关联 input 补发一次 click，这里只统计"用户点击"本身
+          if (e.target && e.target.tagName === 'INPUT') return;
+          clicks.push(li);
+        });
+      });
+
+      // 模拟粉笔（原生 label + Angular ngModel）：点击 label 会勾选对应 input
+      window.__checked = null;
+      document.addEventListener('click', function (e) {
+        var label = e.target.closest && e.target.closest('label.choice-radio-label');
+        if (label) window.__checked = label.getAttribute('for');
+      });
+
+      function ptr(type, el) {
+        var e = new PointerEvent(type, {
+          bubbles: true, cancelable: true, composed: true,
+          button: 0, buttons: 1, clientX: 60, clientY: 60, pointerId: 1, pointerType: 'mouse'
+        });
+        el.dispatchEvent(e);
+        return e;
+      }
+
+      function click(el) {
+        var e = new MouseEvent('click', { bubbles: true, cancelable: true, composed: true });
+        el.dispatchEvent(e);
+        return e;
+      }
+
+      function report(payload) {
+        var pre = document.createElement('pre');
+        pre.id = 'e2e-result';
+        pre.textContent = 'E2E-RESULT:' + JSON.stringify(payload);
+        document.body.appendChild(pre);
+      }
+
+      setTimeout(function () {
+        // 1) 长按第一个选项
+        ptr('pointerdown', spanOfFirst);
+        setTimeout(function () {
+          ptr('pointerup', spanOfFirst);
+          var longPressClicks = clicks.length;
+          var evAfterLongPress = click(spanOfFirst);
+
+          var result = {
+            excludedClass: first.classList.contains('fb-opt-excluded'),
+            excludedCount: document.querySelectorAll('.fb-opt-excluded').length,
+            optionClicksAfterLongPress: longPressClicks,
+            clickDefaultPrevented: evAfterLongPress.defaultPrevented,
+            checkedAfterLongPress: window.__checked
+          };
+
+          // 2) 等过渡结束后读取透明度
+          setTimeout(function () {
+            result.computedOpacity = getComputedStyle(first).opacity;
+
+            // 3) 短按第二个选项 -> 应正常勾选
+            ptr('pointerdown', second);
+            setTimeout(function () {
+              ptr('pointerup', second);
+              click(second.querySelector('.input-text'));
+              result.checkedAfterShortPress = window.__checked;
+              result.shortPressClicks = clicks.length;
+              result.shortPressExcluded = second.classList.contains('fb-opt-excluded');
+
+              // 4) 再次长按第一个选项 -> 恢复
+              setTimeout(function () {
+                ptr('pointerdown', first);
+                setTimeout(function () {
+                  ptr('pointerup', first);
+                  result.restoredAfterSecondLongPress = !first.classList.contains('fb-opt-excluded');
+                  result.finalExcludedCount = document.querySelectorAll('.fb-opt-excluded').length;
+                  report(result);
+                }, 800);
+              }, 60);
+            }, 120);
+          }, 400);
+        }, 700);
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>

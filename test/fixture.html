@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="theme-normal">
+<head>
+  <meta charset="utf-8" />
+  <title>fenbi fixture</title>
+</head>
+<body>
+  <!-- 该结构复制自粉笔线上 bundle 中的 fb-ng-choice-option 组件 -->
+  <div id="app">
+    <div class="fb-question-options fenbi-ng-utils">
+      <div class="ques-options-dry">
+        <div class="options-title font-color-gray-mid">1.</div>
+        <div class="content font-color-gray-mid">
+          <p class="ques-type"><span class="bg-color-gray-bold">单选题</span></p>
+        </div>
+      </div>
+      <article class="question-content font-color-gray-mid bg-color-gray-bold theme-options-content">下列说法正确的是？</article>
+      <ul class="options font-color-gray-mid" id="options">
+        <li class="theme-ques-option" data-idx="0">
+          <label class="fb-label">
+            <input class="fb-radio" type="radio" />
+            <span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">A</span>
+          </label>
+          <div class="options-material theme-options-content font-color-gray-mid">选项一的内容</div>
+        </li>
+        <li class="theme-ques-option" data-idx="1">
+          <label class="fb-label">
+            <input class="fb-radio" type="radio" />
+            <span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">B</span>
+          </label>
+          <div class="options-material theme-options-content font-color-gray-mid">选项二的内容</div>
+        </li>
+        <li class="theme-ques-option" data-idx="2">
+          <label class="fb-label">
+            <input class="fb-radio" type="radio" />
+            <span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">C</span>
+          </label>
+          <div class="options-material theme-options-content font-color-gray-mid">选项三的内容</div>
+        </li>
+        <li class="theme-ques-option" data-idx="3">
+          <label class="fb-label">
+            <input class="fb-radio" type="radio" />
+            <span class="fb-radioInput radio-single bg-color-gray-bold font-color-gray-light border-gray-ligth2">D</span>
+          </label>
+          <div class="options-material theme-options-content font-color-gray-mid">选项四的内容</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 用于验证自定义选择器 -->
+  <ul id="custom-list">
+    <li class="my-option">自定义选项甲</li>
+    <li class="my-option">自定义选项乙</li>
+  </ul>
+</body>
+</html>
